@@ -17,13 +17,15 @@ describe('api',()=>{
       .expect(200)
       .then(({body})=>{
         const categories = body.categories
+        expect(Array.isArray(categories))
+
         expect(categories.length).toBe(4)
         categories.forEach((category)=>{
 
           expect(category.hasOwnProperty("slug", expect.any(String))).toBe(true)
           expect(category.hasOwnProperty('description', expect.any(String))).toBe(true)
         })
-        console.log(categories , '<-response')
+        // console.log(categories , '<-response')
       })
     })
   })
