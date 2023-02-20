@@ -1,7 +1,7 @@
 const db = require('./../db/connection.js');
 exports.selectCategories = () => {
   return db
-  .query('SELECT * FROM comments;')
+  .query('SELECT * FROM categories;')
   .then((result)=>{
     return result.rows
   })
