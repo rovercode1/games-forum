@@ -16,23 +16,23 @@ describe('api',()=>{
       .expect(200)
       .then(( {body} )=>{
         const reviews = body
-        expect(Array.isArray(reviews)).toBe(true)
+        expect(reviews.length).toBe(13)
 
         reviews.forEach((review)=>{
           expect(
-            review.hasOwnProperty("owner", expect.any(Number))
+            review.hasOwnProperty("owner", expect.any(String))
           ).toBe(true);
           expect(
-            review.hasOwnProperty("title", expect.any(Number))
+            review.hasOwnProperty("title", expect.any(String))
           ).toBe(true);
           expect(
             review.hasOwnProperty("review_id", expect.any(Number))
           ).toBe(true);
           expect(
-            review.hasOwnProperty("category", expect.any(Number))
+            review.hasOwnProperty("category", expect.any(String))
           ).toBe(true);
           expect(
-            review.hasOwnProperty("review_img_url", expect.any(Number))
+            review.hasOwnProperty("review_img_url", expect.any(String))
           ).toBe(true);
           expect(
             review.hasOwnProperty("created_at", expect.any(Number))
@@ -41,13 +41,25 @@ describe('api',()=>{
             review.hasOwnProperty("votes", expect.any(Number))
           ).toBe(true);
                   expect(
-            review.hasOwnProperty("designer", expect.any(Number))
+            review.hasOwnProperty("designer", expect.any(String))
           ).toBe(true);
                   expect(
             review.hasOwnProperty("comment_count", expect.any(Number))
           ).toBe(true);
         })
+//the reviews should be sorted by date in descending order.
       })
+    })
+    it('200 GET - the reviews should be sorted by date in descending order',()=>{
+      return request(app)
+      .get('/api/reviews')
+      .expect(200)
+      .then(( {body} )=>{
+        const reviews = body
+      // console.log(expected, '<= sorted')
+      expect(reviews[0].created_at).toEqual('2021-01-25T11:16:54.963Z')
+    })
+      
     })
   })
 })
