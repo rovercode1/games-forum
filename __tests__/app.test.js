@@ -9,6 +9,21 @@ beforeEach(() => seed(data));
 
 afterAll(() => connection.end());
 describe('api',()=>{
+
+  describe('/notARoute',()=>{
+    it('404 GET - responds with  not found message.',()=>{
+      return request(app)
+      .get('/notARoute')
+      .expect(404)
+      .then(({ body }) => {
+        const serverResponseMsg = body.msg;
+        expect(serverResponseMsg).toBe("Path not found");
+      });
+      
+    })
+  })
+
+
   describe('/api/reviews', ()=>{
     it('200 GET - responds array of review objects, including the correct properties ',()=>{
       return request(app)
@@ -17,7 +32,6 @@ describe('api',()=>{
       .then(( {body} )=>{
         const reviews = body
         expect(reviews.length).toBe(13)
-
         reviews.forEach((review)=>{
           expect(
             review.hasOwnProperty("owner", expect.any(String))
@@ -47,7 +61,11 @@ describe('api',()=>{
             review.hasOwnProperty("comment_count", expect.any(Number))
           ).toBe(true);
         })
-//the reviews should be sorted by date in descending order.
+
+        const foundReview = reviews.find((review)=>{if(review.review_id === 2){return review}}) 
+
+        expect(foundReview.comment_count).toBe('3')
+
       })
     })
     it('200 GET - the reviews should be sorted by date in descending order',()=>{
@@ -56,8 +74,9 @@ describe('api',()=>{
       .expect(200)
       .then(( {body} )=>{
         const reviews = body
-      // console.log(expected, '<= sorted')
-      expect(reviews[0].created_at).toEqual('2021-01-25T11:16:54.963Z')
+
+        const reviewDates = reviews.map((review)=>{return review.created_at})
+        expect(reviewDates).toBeSorted({ descending: true });
     })
       
     })
