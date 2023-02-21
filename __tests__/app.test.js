@@ -43,13 +43,12 @@ describe("api", () => {
   });
 
   describe("/api/reviews/:review_id/comments", () => {
-    it.only("200 - responds with all comments with specific review id", () => {
+    it("200 - responds with all comments with specific review id", () => {
       return request(app)
         .get("/api/reviews/3/comments")
         .expect(200)
         .then(({ body }) => {
           const comments = body.comments;
-          console.log(comments);
           expect(comments.length).toBe(3);
 
           comments.forEach((comment) => {
@@ -86,10 +85,10 @@ describe("api", () => {
         });
     });
 
-    it("400 - responds with 400 error message", () => {
+    it.only("404 - responds with 400 error message", () => {
       return request(app)
         .get("/api/reviews/30000/comments")
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
           expect(serverResponseMsg).toBe("Comments not found");
