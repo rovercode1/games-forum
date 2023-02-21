@@ -1,4 +1,4 @@
 node_modules
 .env.*
 INSTRUCTIONS.md
-playground.sql
+sandbox.sql

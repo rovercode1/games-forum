@@ -4,8 +4,8 @@ exports.getReviewById = (request, response, next)=>{
   const reviewId = request.params.review_id;
 
   selectReviewById(reviewId)
-    .then((reviewObj)=>{
-      response.status(200).send(reviewObj)
+    .then((review)=>{
+      response.status(200).send({review: review})
     }).catch((err)=>{
       next(err)
     })

@@ -51,7 +51,7 @@ describe("api", () => {
         .get("/api/reviews/2")
         .expect(200)
         .then(({ body }) => {
-          const review = body;
+          const review = body.review;
           //Should be an Object
 
           console.log(review);
