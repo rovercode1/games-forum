@@ -22,7 +22,7 @@ describe("api", () => {
   });
 
   describe("/api/categories", () => {
-    it("200 - responses with all catgories", () => {
+    it("200 - responds with all catgories", () => {
       return request(app)
         .get("/api/categories")
         .expect(200)
@@ -43,14 +43,14 @@ describe("api", () => {
   });
 
   describe("/api/reviews/:review_id/comments", () => {
-    it.only("200 - respondes with all comments with specific review id", () => {
+    it.only("200 - responds with all comments with specific review id", () => {
       return request(app)
         .get("/api/reviews/3/comments")
         .expect(200)
         .then(({ body }) => {
           const comments = body.comments;
           console.log(comments);
-          expect(comments.length).toBe(6);
+          expect(comments.length).toBe(3);
 
           comments.forEach((comment) => {
 
@@ -78,12 +78,15 @@ describe("api", () => {
               comment.hasOwnProperty("review_id", expect.any(Number))
             ).toBe(true);
           });
-
           // comments should be served with the most recent comments first
+
+          const commentDates = comments.map((comment)=>{return comment.created_at})
+          expect(commentDates).toBeSorted({ descending: true });
+
         });
     });
 
-    it("400 - respondes with 400 error message", () => {
+    it("400 - responds with 400 error message", () => {
       return request(app)
         .get("/api/reviews/30000/comments")
         .expect(400)
@@ -91,11 +94,10 @@ describe("api", () => {
           const serverResponseMsg = body.msg;
           expect(serverResponseMsg).toBe("Comments not found");
 
-          // comments should be served with the most recent comments first
         });
     });
 
-    it("404 - respondes with 404 error message ", () => {
+    it("404 - responds with 404 error message ", () => {
       return request(app)
         .get("/api/reviews/bad-request/comments")
         .expect(404)
@@ -103,7 +105,7 @@ describe("api", () => {
           const serverResponseMsg = body.msg;
           expect(serverResponseMsg).toBe("Bad Request");
 
-          // comments should be served with the most recent comments first
+
         });
     });
   });
