@@ -46,36 +46,26 @@ describe("api", () => {
   // a review object, which should have the following properties:
 
   describe("/api/reviews/review_id", () => {
-    it("200 - responds with review object", () => {
+    it("200 - responds with single review object", () => {
       return request(app)
         .get("/api/reviews/2")
         .expect(200)
         .then(({ body }) => {
-          expect(body.length).toBe(1);
-          const review = body[0];
+          const review = body;
           //Should be an Object
 
-          expect(review.hasOwnProperty("review_id", expect.any(Number))).toBe(
-            true
-          );
-          expect(review.hasOwnProperty("title", expect.any(String))).toBe(true);
-          expect(review.hasOwnProperty("review_body", expect.any(String))).toBe(
-            true
-          );
-          expect(review.hasOwnProperty("designer", expect.any(String))).toBe(
-            true
-          );
-          expect(
-            review.hasOwnProperty("review_img_url", expect.any(String))
-          ).toBe(true);
-          expect(review.hasOwnProperty("votes", expect.any(Number))).toBe(true);
-          expect(review.hasOwnProperty("category", expect.any(String))).toBe(
-            true
-          );
-          expect(review.hasOwnProperty("owner", expect.any(String))).toBe(true);
-          expect(review.hasOwnProperty("created_at", expect.any(String))).toBe(
-            true
-          );
+          console.log(review);
+
+          expect(review.review_id).toBe(2);
+          expect(review.title).toBe('Jenga');
+          expect(review.category).toBe('dexterity');
+          expect(review.designer).toBe('Leslie Scott');
+          
+          expect(review.owner).toBe('philippaclaire9');
+          expect(review.review_body).toBe('Fiddly fun for all the family');
+          expect(review.review_img_url).toBe('https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700');
+          expect(review.created_at).toBe('2021-01-18T10:01:41.251Z');
+          expect(review.votes).toBe(5);
         });
     });
 
