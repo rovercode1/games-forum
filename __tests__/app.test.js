@@ -10,7 +10,7 @@ beforeEach(() => seed(data));
 afterAll(() => connection.end());
 describe("api", () => {
   describe("server errors", () => {
-    it("400 - responds with msg when sent valid but non-existent path", () => {
+    it("404 - responds with msg when sent unavailable.", () => {
       return request(app)
         .get("/notARoute")
         .expect(404)
@@ -22,7 +22,7 @@ describe("api", () => {
   });
 
   describe("/api/categories", () => {
-    it("200 - response ok status", () => {
+    it("200 - response with correct properties.", () => {
       return request(app)
         .get("/api/categories")
         .expect(200)
@@ -41,38 +41,16 @@ describe("api", () => {
         });
     });
   });
-
-  describe("/api/categories", () => {
-    it("200 - response ok status", () => {
-      return request(app)
-        .get("/api/categories")
-        .expect(200)
-        .then(({ body }) => {
-          const categories = body.categories;
-
-          expect(categories.length).toBe(4);
-          categories.forEach((category) => {
-            expect(category.hasOwnProperty("slug", expect.any(String))).toBe(
-              true
-            );
-            expect(
-              category.hasOwnProperty("description", expect.any(String))
-            ).toBe(true);
-          });
-        });
-    });
-  });
-
   // Responds with:
 
   // a review object, which should have the following properties:
 
   describe("/api/reviews/review_id", () => {
-    it.only("200 - responds with review object", () => {
+    it("200 - responds with review object", () => {
       return request(app)
         .get("/api/reviews/2")
         .expect(200)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body.length).toBe(1);
           const review = body[0];
           //Should be an Object
@@ -101,15 +79,11 @@ describe("api", () => {
         });
     });
 
-    //     Bad review_id (e.g. /dog)
-    // Well formed review_id that doesn't exist in the database (e.g. /999999)
-
     it("400 - responds with msg bad request", () => {
       return request(app)
-        .get("/api/review/bad-request")
+        .get("/api/reviews/bad-request")
         .expect(400)
         .then(({ body }) => {
-          console.log(body)
           const serverResponseMsg = body.msg;
           expect(serverResponseMsg).toBe("Bad request");
         });
@@ -117,11 +91,11 @@ describe("api", () => {
 
     it("404 - responds with msg when sent valid but non-existent path", () => {
       return request(app)
-        .get("/api/review/99999999")
+        .get("/api/reviews/99999999")
         .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Path not found");
+          expect(serverResponseMsg).toBe("review_id not found");
         });
     });
   });
