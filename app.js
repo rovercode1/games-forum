@@ -1,11 +1,13 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const {getCategories} = require('./controllers/forum-controllers')
-const {handleServerErrors} = require('./controllers/error-handling')
+const { getCategories } = require("./controllers/forum-controllers");
+const {
+  handleServerErrors,
+  handle404Errors,
+} = require("./controllers/error-handling");
 
+app.get("/api/categories", getCategories);
 
-app.get('/api/categories', getCategories);
-
-app.use(handleServerErrors)
-
-module.exports = app
+app.use(handle404Errors);
+app.use(handleServerErrors);
+module.exports = app;
