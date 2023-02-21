@@ -1,0 +1,56 @@
+\c nc_games_test
+-- SELECT review_id, COUNT(*)
+-- FROM comments
+-- GROUP BY review_id;
+
+
+-- SELECT * FROM reviews ORDER BY created_at DESC
+-- UNION
+-- SELECT
+--       review_id,
+--       COUNT(*)
+--       FROM
+--       comments
+--       GROUP BY
+--       review_id;
+
+-- SELECT comments.review_id, COUNT(reviews.review_id) AS "number_of_comments"
+-- FROM comments 
+--   LEFT JOIN reviews ON comments.review_id = reviews.review_id
+-- GROUP BY comments.review_id;
+
+SELECT COUNT(*) AS All_Rows,
+       COUNT(addressLine2) AS addressLine2_Count, 
+       COUNT(*) - COUNT(addressLine2) AS Null_addressLine2_Rows
+FROM customers;
+
+-- SELECT COUNT(reviews.review_id) as comment_count
+-- FROM reviews
+-- left JOIN 
+-- 	comments ON comments.review_id = reviews.review_id
+-- GROUP BY reviews.review_id
+
+-- SELECT reviews.review_id, reviews.owner, reviews.title, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, reviews.designer
+-- FROM reviews
+-- INNER JOIN comments ON reviews.review_id=comments.review_id;
+
+
+
+-- SELECT reviews.review_id, reviews.title, reviews.category, reviews.created_at, reviews.votes, reviews.designer
+-- FROM reviews
+-- INNER JOIN comments ON reviews.review_id=comments.review_id;
+-- SELECT COUNT(*) as comment_count
+-- FROM comments 
+
+-- WHERE review_id = 4
+
+-- SELECT * FROM comments
+
+
+-- SELECT
+-- 	review_id,
+-- 	COUNT(*)
+-- FROM
+-- 	comments
+-- GROUP BY
+-- 	review_id;
