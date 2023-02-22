@@ -191,7 +191,6 @@ describe("api", () => {
         .get("/api/reviews/74872/comments")
         .expect(404)
         .then(({ body }) => {
-          console.log(body)
           const serverResponseMsg = body.msg;
           expect(serverResponseMsg).toBe("Comments not found.");
         });
