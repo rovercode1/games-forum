@@ -4,7 +4,8 @@ exports.handle404Errors = (req, res, next) => {
 
 exports.handle400Errors = ( req, res, next) => {
   res.status(400).send({ msg: "Bad request" });
-};
+
+}
 
 exports.handleServerErrors = (err, req, res, next) => {
   if(err === 'review_id not found'){

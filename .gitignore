@@ -1,4 +1,4 @@
+*.sql
 node_modules
 .env.*
 INSTRUCTIONS.md
-sandbox.sql
