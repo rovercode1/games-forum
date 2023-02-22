@@ -17,7 +17,7 @@ describe("api", () => {
         .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Path not found");
+          expect(serverResponseMsg).toBe("Path not found.");
         });
     });
   });
@@ -135,7 +135,7 @@ describe("api", () => {
         .expect(400)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Bad request");
+          expect(serverResponseMsg).toBe("Bad request.");
         });
     });
 
@@ -145,14 +145,14 @@ describe("api", () => {
         .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("review_id not found");
+          expect(serverResponseMsg).toBe("review_id not found.");
         });
     });
   });
 
   //TODO
   describe("/api/reviews/:review_id/comments", () => {
-    it.only("200 GET - responds with an array of comments for the given review_id", () => {
+    it("200 GET - responds with an array of comments for the given review_id", () => {
       return request(app)
         .get("/api/reviews/3/comments")
         .expect(200)
@@ -177,7 +177,7 @@ describe("api", () => {
         .get("/api/reviews/3/comments")
         .expect(200)
         .then(({ body }) => {
-          const comments = body;
+          const comments = body.comments;
           // comments should be served with the most recent comments first
           const commentDates = comments.map((comment) => {
             return comment.created_at;
@@ -186,13 +186,14 @@ describe("api", () => {
         });
     });
 
-    it("404 - responds with msg when sent valid but non-existent path", () => {
+    it("404 - responds with msg when sent valid but non-existent path.", () => {
       return request(app)
         .get("/api/reviews/74872/comments")
         .expect(404)
         .then(({ body }) => {
+          console.log(body)
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Comments not found");
+          expect(serverResponseMsg).toBe("Comments not found.");
         });
     });
 
@@ -202,7 +203,7 @@ describe("api", () => {
         .expect(400)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Bad request");
+          expect(serverResponseMsg).toBe("Bad request.");
         });
     });
   });
