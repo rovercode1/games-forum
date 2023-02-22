@@ -1,11 +1,13 @@
 const express = require("express");
 const app = express();
+
 const {
   getCategories,
   getReviewById,
   getReviews,
   getCommentsByReviewid
 } = require("./controllers/controllers");
+
 const {
   handleServerErrors,
   handle404Errors,
@@ -15,8 +17,6 @@ const {
 
 app.get("/api/categories", getCategories);
 
-
-//REFACTOR GET REVIEWS _ GETREVIEW BY ID AS SAME FUNCTION
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewid);

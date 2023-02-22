@@ -23,7 +23,8 @@ describe("api", () => {
   });
 
   describe("/api/categories", () => {
-    it("200 - response with correct properties.", () => {
+    it("200 - responds with all catgories with correct properties.", () => {
+
       return request(app)
         .get("/api/categories")
         .expect(200)
@@ -42,6 +43,7 @@ describe("api", () => {
         });
     });
   });
+
 
   describe("/api/reviews", () => {
     it("200 GET - responds array of review objects, including the correct properties ", () => {
@@ -150,7 +152,6 @@ describe("api", () => {
     });
   });
 
-  //TODO
   describe("/api/reviews/:review_id/comments", () => {
     it("200 GET - responds with an array of comments for the given review_id", () => {
       return request(app)
@@ -158,6 +159,7 @@ describe("api", () => {
         .expect(200)
         .then(({ body }) => {
           const comments = body.comments;
+
           expect(body.comments.length).toBe(3);
           comments.forEach((comment) => {
             // console.log(typeof comment.comment_id)
