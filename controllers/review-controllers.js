@@ -1,5 +1,6 @@
 const {selectReviews, selectReviewById} = require('../models/review-models')
 
+
 exports.getReviews = (request, response, next)=>{
   selectReviews().then((reviews)=>{
     response.status(200).send(reviews)
@@ -7,7 +8,6 @@ exports.getReviews = (request, response, next)=>{
     next(err)
   })
 }
-
 exports.getReviewById = (request, response, next)=>{
   const reviewId = request.params.review_id;
 

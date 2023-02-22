@@ -1,5 +1,4 @@
-
-const db = require("../db/connection.js");
+const db = require("./../db/connection.js");
 const format = require("pg-format");
 
 exports.selectCategories = () => {
@@ -9,4 +8,3 @@ exports.selectCategories = () => {
     return result.rows
   })
 }
-
