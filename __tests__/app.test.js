@@ -64,7 +64,7 @@ describe("api", () => {
           });
       });
 
-      it("400 GET - responds with bad request msg.", () => {
+      it("400 GET - invalid review id responds with bad request msg.", () => {
         return request(app)
           .get("/api/reviews/bad-request")
           .expect(400)
@@ -209,10 +209,21 @@ describe("api", () => {
         });
     });
 
-    it("400 POST - responds with bad request msg.", () => {
+    it("400 POST - invalid review id responds with bad request msg.", () => {
       return request(app)
         .post("/api/reviews/bad-request/comments")
         .send({ username: "mallionaire", body: "This is a new comment!" })
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+
+    it("400 GET - missing fileds responds with bad request msg.", () => {
+      return request(app)
+        .get("/api/reviews/bad-request")
+        .send({ not:'the_correct_field' })
         .expect(400)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
