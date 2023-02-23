@@ -23,7 +23,7 @@ describe("api", () => {
   });
 
   describe("/api/categories", () => {
-    it("200 - responds with all catgories with correct properties.", () => {
+    it("200 GET - responds with all catgories with correct properties.", () => {
       return request(app)
         .get("/api/categories")
         .expect(200)
@@ -148,7 +148,7 @@ describe("api", () => {
         });
     });
 
-    it.only("201 PATCH - responds with the updated review.", () => {
+    it("201 PATCH - responds with the updated review.", () => {
       return request(app)
         .patch("/api/reviews/2")
         .send({ inc_votes: 100 })
@@ -171,7 +171,7 @@ describe("api", () => {
         });
     });
 
-    it.only("201 PATCH - ignores other properties responds with the updated review.", () => {
+    it("201 PATCH - ignores other properties responds with the updated review.", () => {
       return request(app)
         .patch("/api/reviews/2")
         .send({ inc_votes: -100, name: "Anouk" })
@@ -250,7 +250,7 @@ describe("api", () => {
         });
     });
 
-    it("404 - responds with msg when sent valid but non-existent path.", () => {
+    it("404 GET - responds with msg when sent valid but non-existent path.", () => {
       return request(app)
         .get("/api/reviews/74872/comments")
         .expect(404)
@@ -260,7 +260,7 @@ describe("api", () => {
         });
     });
 
-    it("400 - responds with msg bad request", () => {
+    it("400 GET - responds with msg bad request", () => {
       return request(app)
         .get("/api/reviews/bad-request/comments")
         .expect(400)

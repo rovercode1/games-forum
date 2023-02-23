@@ -20,7 +20,7 @@ exports.selectReviewById = (reviewId) => {
   let queryParam = [];
 
   if (reviewId !== undefined) {
-    queryString += " WHERE review_id = $1 RETURN *";
+    queryString += " WHERE review_id = $1";
     queryParam.push(reviewId);
   }
   return db.query(queryString, queryParam).then((review) => {
@@ -47,9 +47,9 @@ exports.updateReviewById = (reviewId, votesUpdate) =>{
 
   return db.query(queryString, queryParam)
   .then((review) => {
-    // if (review.rowCount === 0) {
-    //   return Promise.reject("review_id not found");
-    // }
+    if (review.rowCount === 0) {
+      return Promise.reject("review_id not found");
+    }
     return review.rows[0];
   });
 }
