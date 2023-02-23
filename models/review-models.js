@@ -16,12 +16,6 @@ exports.selectReviews = () => {
 };
 
 exports.selectReviewById = (reviewId) => {
-  //Check reviewId is valid
-  const regEx = /^\d+$/gm;
-
-  if (regEx.test(parseInt(reviewId)) === false) {
-    return Promise.reject("Invalid review_id");
-  }
 
   //if no id
   let queryString = "SELECT * FROM reviews";
