@@ -20,7 +20,7 @@ describe("api", () => {
           expect(serverResponseMsg).toBe("Path not found");
         });
     });
-
+  });
     describe("/api/categories", () => {
       it("200 GET - response with correct properties.", () => {
         return request(app)
@@ -80,11 +80,11 @@ describe("api", () => {
           .expect(404)
           .then(({ body }) => {
             const serverResponseMsg = body.msg;
-            expect(serverResponseMsg).toBe("Review not found.");
+            expect(serverResponseMsg).toBe("Content not found.");
           });
       });
     });
-  });
+
 
   describe("/api/reviews", () => {
     it("200 GET - responds array of review objects, including the correct properties ", () => {
@@ -133,7 +133,7 @@ describe("api", () => {
           expect(foundReview.comment_count).toBe("3");
         });
     });
-    it("200 GET - the reviews should be sorted by date in descending order", () => {
+    it("200 GET - the reviews should be sorted by date in descending order.", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -149,7 +149,7 @@ describe("api", () => {
   });
 
   describe("/api/reviews/:review_id/comments", () => {
-    it("201 POST - responds with the posted comment", () => {
+    it("201 POST - responds with the posted comment.", () => {
       return request(app)
         .post("/api/reviews/6/comments")
         .send({ username: "mallionaire", body: "This is a new comment!" })
@@ -168,6 +168,25 @@ describe("api", () => {
           });
         });
     });
+    it("201 POST - ignores irrelevant properties responds with the posted comment.", () => {
+      return request(app)
+        .post("/api/reviews/8/comments")
+        .send({ username: "mallionaire", body: "Ignore the fruit!",fruit: 'banana' })
+        .expect(201)
+        .then(({ body }) => {
+
+          const comment = body.comment;
+
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            body: "Ignore the fruit!",
+            review_id: 8,
+            author: "mallionaire",
+            votes: 0,
+            created_at: expect.any(String),
+          });
+        });
+    });
     it("404 POST - responds with msg when sent valid but non-existent path", () => {
       return request(app)
         .post("/api/reviews/99999999/comments")
@@ -175,7 +194,18 @@ describe("api", () => {
         .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Review not found.");
+          expect(serverResponseMsg).toBe("Content not found.");
+        });
+    });
+
+    it("404 POST - responds with msg when sent invalid username.", () => {
+      return request(app)
+        .post("/api/reviews/10/comments")
+        .send({ username: "not_a_username", body: "This is a new comment!" })
+        .expect(404)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Content not found.");
         });
     });
 

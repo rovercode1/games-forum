@@ -17,7 +17,6 @@ exports.selectReviews = () => {
 
 exports.selectReviewById = (reviewId) => {
 
-  //if no id
   let queryString = "SELECT * FROM reviews";
   let queryParam = [];
 

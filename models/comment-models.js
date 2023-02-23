@@ -10,7 +10,8 @@ exports.insertComment = (newComment, reviewId) => {
       ($1, $2, $3) 
     RETURNING *;`;
 
-  return db.query(queryStr, formattedComment).then((postedComment) => {
+    return db.query(queryStr, formattedComment)
+    .then((postedComment) => {
     return postedComment.rows[0];
   });
 };
