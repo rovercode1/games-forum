@@ -24,7 +24,6 @@ describe("api", () => {
 
   describe("/api/categories", () => {
     it("200 - responds with all catgories with correct properties.", () => {
-
       return request(app)
         .get("/api/categories")
         .expect(200)
@@ -43,7 +42,6 @@ describe("api", () => {
         });
     });
   });
-
 
   describe("/api/reviews", () => {
     it("200 GET - responds array of review objects, including the correct properties ", () => {
@@ -108,13 +106,12 @@ describe("api", () => {
   });
 
   describe("/api/reviews/review_id", () => {
-    it("200 - responds with single review object", () => {
+    it("200 GET - responds with single review object.", () => {
       return request(app)
         .get("/api/reviews/2")
         .expect(200)
         .then(({ body }) => {
           const review = body.review;
-          //Should be an Object
 
           expect(review.review_id).toBe(2);
           expect(review.title).toBe("Jenga");
@@ -131,7 +128,7 @@ describe("api", () => {
         });
     });
 
-    it("400 - responds with msg bad request", () => {
+    it("400 GET - responds with msg bad request.", () => {
       return request(app)
         .get("/api/reviews/bad-request")
         .expect(400)
@@ -141,9 +138,75 @@ describe("api", () => {
         });
     });
 
-    it("404 - responds with msg when sent valid but non-existent path", () => {
+    it("404 GET - responds with msg when sent valid but non-existent path.", () => {
       return request(app)
         .get("/api/reviews/99999999")
+        .expect(404)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Review not found.");
+        });
+    });
+
+    it.only("201 PATCH - responds with the updated review.", () => {
+      return request(app)
+        .patch("/api/reviews/2")
+        .send({ inc_votes: 100 })
+        .expect(201)
+        .then(({ body }) => {
+          const review = body.review;
+
+          expect(review.review_id).toBe(2);
+          expect(review.title).toBe("Jenga");
+          expect(review.category).toBe("dexterity");
+          expect(review.designer).toBe("Leslie Scott");
+
+          expect(review.owner).toBe("philippaclaire9");
+          expect(review.review_body).toBe("Fiddly fun for all the family");
+          expect(review.review_img_url).toBe(
+            "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700"
+          );
+          expect(review.created_at).toBe("2021-01-18T10:01:41.251Z");
+          expect(review.votes).toBe(105);
+        });
+    });
+
+    it.only("201 PATCH - ignores other properties responds with the updated review.", () => {
+      return request(app)
+        .patch("/api/reviews/2")
+        .send({ inc_votes: -100, name: "Anouk" })
+        .expect(201)
+        .then(({ body }) => {
+          const review = body.review;
+          expect(review.votes).toBe(-95);
+        });
+    });
+
+    it("400 PATCH - responds with msg bad request if inc_votes not included.", () => {
+      return request(app)
+        .patch("/api/reviews/bad-request")
+        .send({ inc_votes: "notanumber" })
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+    it("400 PATCH - responds with msg bad request if passed a non-number.", () => {
+      return request(app)
+        .patch("/api/reviews/bad-request")
+        .send({ not_votes: 2 })
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+
+    it("404 PATCH - responds with msg when sent valid but non-existent path.", () => {
+      return request(app)
+        .patch("/api/reviews/99999999")
+        .send({ inc_votes: 5 })
         .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
