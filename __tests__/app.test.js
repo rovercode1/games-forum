@@ -46,7 +46,7 @@ describe("api", () => {
 
 
   describe("/api/reviews", () => {
-    it("200 GET - responds array of review objects, including the correct properties ", () => {
+    it("200 GET - responds array of review objects, including the correct properties.", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -92,7 +92,7 @@ describe("api", () => {
           expect(foundReview.comment_count).toBe("3");
         });
     });
-    it("200 GET - the reviews should be sorted by date in descending order", () => {
+    it("200 GET - the reviews should be sorted by date in descending order.", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -108,13 +108,12 @@ describe("api", () => {
   });
 
   describe("/api/reviews/review_id", () => {
-    it("200 - responds with single review object", () => {
+    it("200 - responds with single review object.", () => {
       return request(app)
         .get("/api/reviews/2")
         .expect(200)
         .then(({ body }) => {
           const review = body.review;
-          //Should be an Object
 
           expect(review.review_id).toBe(2);
           expect(review.title).toBe("Jenga");
@@ -131,7 +130,7 @@ describe("api", () => {
         });
     });
 
-    it("400 - responds with msg bad request", () => {
+    it("400 - responds with msg bad request.", () => {
       return request(app)
         .get("/api/reviews/bad-request")
         .expect(400)
@@ -141,7 +140,7 @@ describe("api", () => {
         });
     });
 
-    it("404 - responds with msg when sent valid but non-existent path", () => {
+    it("404 - responds with msg when sent valid but non-existent path.", () => {
       return request(app)
         .get("/api/reviews/99999999")
         .expect(404)
@@ -153,7 +152,7 @@ describe("api", () => {
   });
 
   describe("/api/reviews/:review_id/comments", () => {
-    it("200 GET - responds with an array of comments for the given review_id", () => {
+    it("200 GET - responds with an array of comments for the given review_id.", () => {
       return request(app)
         .get("/api/reviews/3/comments")
         .expect(200)
@@ -170,20 +169,30 @@ describe("api", () => {
             expect(typeof comment.review_id).toBe("number");
           });
         });
-      ///
     });
 
-    it("200 GET - comments should be sorted by date in descending order", () => {
+    it("200 GET - comments should be sorted by date in descending order.", () => {
       return request(app)
         .get("/api/reviews/3/comments")
         .expect(200)
         .then(({ body }) => {
           const comments = body.comments;
-          // comments should be served with the most recent comments first
+
           const commentDates = comments.map((comment) => {
             return comment.created_at;
           });
           expect(commentDates).toBeSorted({ descending: true });
+        });
+    });
+
+    it("200 GET - review with no comments should return an empty array.", () => {
+      return request(app)
+        .get("/api/reviews/8/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const comments = body.comments;
+
+          expect(comments).toEqual([])
         });
     });
 
@@ -197,7 +206,7 @@ describe("api", () => {
         });
     });
 
-    it("400 - responds with msg bad request", () => {
+    it("400 - responds with msg bad request.", () => {
       return request(app)
         .get("/api/reviews/bad-request/comments")
         .expect(400)
