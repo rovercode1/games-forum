@@ -147,7 +147,7 @@ describe("api", () => {
         .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("review_id not found.");
+          expect(serverResponseMsg).toBe("Review not found.");
         });
     });
   });
@@ -162,7 +162,6 @@ describe("api", () => {
 
           expect(body.comments.length).toBe(3);
           comments.forEach((comment) => {
-            // console.log(typeof comment.comment_id)
             expect(typeof comment.comment_id).toBe("number");
             expect(typeof comment.votes).toBe("number");
             expect(typeof comment.created_at).toBe("string");

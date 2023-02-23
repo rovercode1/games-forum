@@ -5,13 +5,6 @@ exports.selectComments = (reviewId) => {
   let queryStr = 'SELECT * FROM comments'
   let queryParam = []
 
-
-  const regEx = /^\d+$/gm;
-
-  if (regEx.test(parseInt(reviewId)) === false) {
-    return Promise.reject("Invalid review_id");
-  }
-
   if(reviewId !== undefined){
     queryStr+= ' WHERE review_id = $1 ORDER BY created_at DESC'
     queryParam.push(reviewId)
