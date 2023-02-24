@@ -286,12 +286,13 @@ describe("api", () => {
     });
 
     describe("GET", () => {
-      it("200 GET - responds with an array of comments for the given review id.", () => {
+      it("200 GET - responds with an array of comments for the given review_id.", () => {
         return request(app)
           .get("/api/reviews/3/comments")
           .expect(200)
           .then(({ body }) => {
             const comments = body.comments;
+  
             expect(body.comments.length).toBe(3);
             comments.forEach((comment) => {
               expect(comment).toMatchObject({
@@ -304,32 +305,43 @@ describe("api", () => {
               });
             });
           });
-        ///
       });
-
+  
       it("200 GET - comments should be sorted by date in descending order.", () => {
         return request(app)
           .get("/api/reviews/3/comments")
           .expect(200)
           .then(({ body }) => {
             const comments = body.comments;
+  
             const commentDates = comments.map((comment) => {
               return comment.created_at;
             });
             expect(commentDates).toBeSorted({ descending: true });
           });
       });
-
+  
+      it("200 GET - review with no comments should return an empty array.", () => {
+        return request(app)
+          .get("/api/reviews/8/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const comments = body.comments;
+  
+            expect(comments).toEqual([])
+          });
+      });
+  
       it("404 GET - responds with msg when sent valid but non-existent path.", () => {
         return request(app)
           .get("/api/reviews/74872/comments")
           .expect(404)
           .then(({ body }) => {
             const serverResponseMsg = body.msg;
-            expect(serverResponseMsg).toBe("Content not found.");
+            expect(serverResponseMsg).toBe("Comments not found.");
           });
       });
-
+  
       it("400 GET - responds with msg bad request.", () => {
         return request(app)
           .get("/api/reviews/bad-request/comments")
