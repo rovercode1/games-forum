@@ -11,7 +11,7 @@ afterAll(() => connection.end());
 
 describe("api", () => {
   describe("server errors", () => {
-    it("404 - responds with msg when sent unavailable.", () => {
+    it("404 GET - responds with msg when sent unavailable.", () => {
       return request(app)
         .get("/notARoute")
         .expect(404)
@@ -29,7 +29,6 @@ describe("api", () => {
         .expect(200)
         .then(({ body }) => {
           const categories = body.categories;
-
           expect(categories.length).toBe(4);
           categories.forEach((category) => {
             expect(category.hasOwnProperty("slug", expect.any(String))).toBe(
@@ -44,42 +43,28 @@ describe("api", () => {
   });
 
   describe("/api/reviews", () => {
-    it("200 GET - responds array of review objects, including the correct properties ", () => {
+    it("200 GET - responds array of review objects, including the correct properties.", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
         .then(({ body }) => {
-          const reviews = body;
+          const reviews = body.reviews;
           expect(reviews.length).toBe(13);
           reviews.forEach((review) => {
-            expect(review.hasOwnProperty("owner", expect.any(String))).toBe(
-              true
-            );
-            expect(review.hasOwnProperty("title", expect.any(String))).toBe(
-              true
-            );
-            expect(review.hasOwnProperty("review_id", expect.any(Number))).toBe(
-              true
-            );
-            expect(review.hasOwnProperty("category", expect.any(String))).toBe(
-              true
-            );
-            expect(
-              review.hasOwnProperty("review_img_url", expect.any(String))
-            ).toBe(true);
-            expect(
-              review.hasOwnProperty("created_at", expect.any(Number))
-            ).toBe(true);
-            expect(review.hasOwnProperty("votes", expect.any(Number))).toBe(
-              true
-            );
-            expect(review.hasOwnProperty("designer", expect.any(String))).toBe(
-              true
-            );
-            expect(
-              review.hasOwnProperty("comment_count", expect.any(Number))
-            ).toBe(true);
+            expect(review).toMatchObject({
+
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(String),
+
           });
+        })
 
           const foundReview = reviews.find((review) => {
             if (review.review_id === 2) {
@@ -90,12 +75,12 @@ describe("api", () => {
           expect(foundReview.comment_count).toBe("3");
         });
     });
-    it("200 GET - the reviews should be sorted by date in descending order", () => {
+    it("200 GET - the reviews should be sorted by date in descending order.", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
         .then(({ body }) => {
-          const reviews = body;
+          const reviews = body.reviews;
 
           const reviewDates = reviews.map((review) => {
             return review.created_at;
@@ -113,22 +98,24 @@ describe("api", () => {
         .then(({ body }) => {
           const review = body.review;
 
-          expect(review.review_id).toBe(2);
-          expect(review.title).toBe("Jenga");
-          expect(review.category).toBe("dexterity");
-          expect(review.designer).toBe("Leslie Scott");
+          expect(review).toMatchObject({
+            review_id: 2,
+            title: 'Jenga',
+            category: 'dexterity',
+            designer: 'Leslie Scott',
 
-          expect(review.owner).toBe("philippaclaire9");
-          expect(review.review_body).toBe("Fiddly fun for all the family");
-          expect(review.review_img_url).toBe(
-            "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700"
-          );
-          expect(review.created_at).toBe("2021-01-18T10:01:41.251Z");
-          expect(review.votes).toBe(5);
+            owner: 'philippaclaire9',
+            review_body: 'Fiddly fun for all the family',
+            review_img_url: 'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
+            created_at: '2021-01-18T10:01:41.251Z',
+            votes: 5
+
+        });
+
         });
     });
 
-    it("400 GET - responds with msg bad request.", () => {
+    it("400 GET - invalid review id responds with bad request msg.", () => {
       return request(app)
         .get("/api/reviews/bad-request")
         .expect(400)
@@ -144,7 +131,7 @@ describe("api", () => {
         .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Review not found.");
+          expect(serverResponseMsg).toBe("Content not found.");
         });
     });
 
@@ -156,19 +143,19 @@ describe("api", () => {
         .then(({ body }) => {
           const review = body.review;
 
-          expect(review.review_id).toBe(2);
-          expect(review.title).toBe("Jenga");
-          expect(review.category).toBe("dexterity");
-          expect(review.designer).toBe("Leslie Scott");
+          expect(review).toMatchObject({
+            review_id: 2,
+            title: 'Jenga',
+            category: 'dexterity',
+            designer: 'Leslie Scott',
 
-          expect(review.owner).toBe("philippaclaire9");
-          expect(review.review_body).toBe("Fiddly fun for all the family");
-          expect(review.review_img_url).toBe(
-            "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700"
-          );
-          expect(review.created_at).toBe("2021-01-18T10:01:41.251Z");
-          expect(review.votes).toBe(105);
+            owner: 'philippaclaire9',
+            review_body: 'Fiddly fun for all the family',
+            review_img_url: 'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
+            created_at: '2021-01-18T10:01:41.251Z',
+            votes: 105
         });
+      });
     });
 
     it("201 PATCH - ignores other properties responds with the updated review.", () => {
@@ -210,64 +197,150 @@ describe("api", () => {
         .expect(404)
         .then(({ body }) => {
           const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Review not found.");
+          expect(serverResponseMsg).toBe("Content not found.");
         });
     });
   });
 
   describe("/api/reviews/:review_id/comments", () => {
-    it("200 GET - responds with an array of comments for the given review_id", () => {
-      return request(app)
-        .get("/api/reviews/3/comments")
-        .expect(200)
-        .then(({ body }) => {
-          const comments = body.comments;
-
-          expect(body.comments.length).toBe(3);
-          comments.forEach((comment) => {
-            expect(typeof comment.comment_id).toBe("number");
-            expect(typeof comment.votes).toBe("number");
-            expect(typeof comment.created_at).toBe("string");
-            expect(typeof comment.author).toBe("string");
-            expect(typeof comment.body).toBe("string");
-            expect(typeof comment.review_id).toBe("number");
+    describe("POST", () => {
+      it("201 POST - responds with the posted comment.", () => {
+        return request(app)
+          .post("/api/reviews/6/comments")
+          .send({ username: "mallionaire", body: "This is a new comment!" })
+          .expect(201)
+          .then(({ body }) => {
+            const comment = body.comment;
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              body: "This is a new comment!",
+              review_id: 6,
+              author: "mallionaire",
+              votes: 0,
+              created_at: expect.any(String),
+            });
           });
-        });
-      ///
-    });
-
-    it("200 GET - comments should be sorted by date in descending order", () => {
-      return request(app)
-        .get("/api/reviews/3/comments")
-        .expect(200)
-        .then(({ body }) => {
-          const comments = body.comments;
-          // comments should be served with the most recent comments first
-          const commentDates = comments.map((comment) => {
-            return comment.created_at;
+      });
+      it("201 POST - ignores irrelevant properties responds with the posted comment.", () => {
+        return request(app)
+          .post("/api/reviews/8/comments")
+          .send({
+            username: "mallionaire",
+            body: "Ignore the fruit!",
+            fruit: "banana",
+          })
+          .expect(201)
+          .then(({ body }) => {
+            const comment = body.comment;
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              body: "Ignore the fruit!",
+              review_id: 8,
+              author: "mallionaire",
+              votes: 0,
+              created_at: expect.any(String),
+            });
           });
-          expect(commentDates).toBeSorted({ descending: true });
-        });
+      });
+      it("404 POST - responds with msg when sent valid but non-existent path.", () => {
+        return request(app)
+          .post("/api/reviews/99999999/comments")
+          .send({ username: "mallionaire", body: "This is a new comment!" })
+          .expect(404)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Content not found.");
+          });
+      });
+
+      it("404 POST - responds with msg when sent invalid username.", () => {
+        return request(app)
+          .post("/api/reviews/10/comments")
+          .send({ username: "not_a_username", body: "This is a new comment!" })
+          .expect(404)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Content not found.");
+          });
+      });
+
+      it("400 POST - invalid review id responds with bad request msg.", () => {
+        return request(app)
+          .post("/api/reviews/bad-request/comments")
+          .send({ username: "mallionaire", body: "This is a new comment!" })
+          .expect(400)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Bad request.");
+          });
+      });
+
+      it("400 POST - missing fileds responds with bad request msg.", () => {
+        return request(app)
+          .get("/api/reviews/bad-request")
+          .send({ not: "the_correct_field" })
+          .expect(400)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Bad request.");
+          });
+      });
     });
 
-    it("404 GET - responds with msg when sent valid but non-existent path.", () => {
-      return request(app)
-        .get("/api/reviews/74872/comments")
-        .expect(404)
-        .then(({ body }) => {
-          const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Comments not found.");
-        });
-    });
+    describe("GET", () => {
+      it("200 GET - responds with an array of comments for the given review id.", () => {
+        return request(app)
+          .get("/api/reviews/3/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const comments = body.comments;
+            expect(body.comments.length).toBe(3);
+            comments.forEach((comment) => {
+              expect(comment).toMatchObject({
+                comment_id: expect.any(Number),
+                body: expect.any(String),
+                review_id: expect.any(Number),
+                author: expect.any(String),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+              });
+            });
+          });
+        ///
+      });
 
-    it("400 GET - responds with msg bad request", () => {
-      return request(app)
-        .get("/api/reviews/bad-request/comments")
-        .expect(400)
-        .then(({ body }) => {
-          const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Bad request.");
-        });
+      it("200 GET - comments should be sorted by date in descending order.", () => {
+        return request(app)
+          .get("/api/reviews/3/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const comments = body.comments;
+            const commentDates = comments.map((comment) => {
+              return comment.created_at;
+            });
+            expect(commentDates).toBeSorted({ descending: true });
+          });
+      });
+
+      it("404 GET - responds with msg when sent valid but non-existent path.", () => {
+        return request(app)
+          .get("/api/reviews/74872/comments")
+          .expect(404)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Content not found.");
+          });
+      });
+
+      it("400 GET - responds with msg bad request.", () => {
+        return request(app)
+          .get("/api/reviews/bad-request/comments")
+          .expect(400)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Bad request.");
+          });
+      });
     });
   });
 });

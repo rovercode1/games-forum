@@ -25,7 +25,7 @@ exports.selectReviewById = (reviewId) => {
   }
   return db.query(queryString, queryParam).then((review) => {
     if (review.rowCount === 0) {
-      return Promise.reject("review_id not found");
+      return Promise.reject("Content not found.");
     }
     return review.rows[0];
   });
@@ -48,7 +48,7 @@ exports.updateReviewById = (reviewId, votesUpdate) =>{
   return db.query(queryString, queryParam)
   .then((review) => {
     if (review.rowCount === 0) {
-      return Promise.reject("review_id not found");
+      return Promise.reject("Content not found.");
     }
     return review.rows[0];
   });
