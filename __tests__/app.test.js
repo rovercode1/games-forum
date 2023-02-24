@@ -100,7 +100,7 @@ describe("api", () => {
   describe("/api/reviews?query", () => {
     it("200 GET - responds with queried array of review objects", () => {
       return request(app)
-        .get("/api/reviews?category=social_deduction&sort_by=title&order=asc")
+        .get("/api/reviews?category=social+deduction&sort_by=title&order=asc")
         .expect(200)
         .then(({ body }) => {
           const reviews = body.reviews;
@@ -128,9 +128,9 @@ describe("api", () => {
           expect(foundReview.comment_count).toBe("0");
         });
     });
-    it.only("200 GET - endpoint should default with DESC if there is order query.", () => {
+    it("200 GET - endpoint should default with DESC if there is order query.", () => {
       return request(app)
-        .get("/api/reviews?category=social_deduction&sort_by=title")
+        .get("/api/reviews?category=social+deduction&sort_by=title")
         .expect(200)
         .then(({ body }) => {
           const reviews = body.reviews;
@@ -142,9 +142,9 @@ describe("api", () => {
         });
     });
   
-    it("200 GET - returns empty array if category that exists but does not have any reviews associated with it.",()=>{
+    it.only("200 GET - returns empty array if category that exists but does not have any reviews associated with it.",()=>{
       return request(app)
-      .get("/api/reviews?category=children%27s_games")
+      .get("/api/reviews?category=children%27s+games")
       .expect(200)
       .then(({body})=>{
         const reviews = body.reviews;
@@ -155,7 +155,7 @@ describe("api", () => {
 
     it("400 GET - returns msg if  sort by column that doesn't exist.",()=>{
       return request(app)
-      .get('/api/reviews?category=does_not_exist')
+      .get('/api/reviews?category=does+not+exist')
       .expect(400)
       .then(({body})=>{
 
@@ -166,7 +166,7 @@ describe("api", () => {
 
     it("400 GET - returns msg if order !== 'asc' / 'desc'.",()=>{
       return request(app)
-      .get('/api/reviews?order=upside_down')
+      .get('/api/reviews?order=upside+down')
       .expect(400)
       .then(({body})=>{
         const serverResponseMsg = body.msg;
