@@ -141,50 +141,45 @@ describe("api", () => {
           expect(reviewTitles).toBeSorted({ descending: true });
         });
     });
-  
-    it("200 GET - returns empty array if category that exists but does not have any reviews associated with it.",()=>{
-      return request(app)
-      .get("/api/reviews?category=children%27s+games")
-      .expect(200)
-      .then(({body})=>{
-        const reviews = body.reviews;
-        expect(reviews).toEqual([]);
-        
-      })
-    })
 
-    it("400 GET - returns msg if  sort by column that doesn't exist.",()=>{
+    it("200 GET - returns empty array if category that exists but does not have any reviews associated with it.", () => {
       return request(app)
-      .get('/api/reviews?category=does+not+exist')
-      .expect(400)
-      .then(({body})=>{
-
-        const serverResponseMsg = body.msg;
-        expect(serverResponseMsg).toBe("Bad request.");
-      })
-    })
-
-    it("400 GET - returns msg if order !== 'asc' / 'desc'.",()=>{
+        .get("/api/reviews?category=children%27s+games")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews).toEqual([]);
+        });
+    });
+    it("404 GET - returns msg if order !== 'asc' / 'desc'.", () => {
       return request(app)
-      .get('/api/reviews?order=upside+down')
-      .expect(400)
-      .then(({body})=>{
-        const serverResponseMsg = body.msg;
-        expect(serverResponseMsg).toBe("Bad request.");
-      })
-    })
+        .get("/api/reviews?order=upside+down")
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
 
-    it("400 GET - returns msg if category is not in the database.",()=>{
+    it("400 GET - returns msg if  sort by column that doesn't exist.", () => {
       return request(app)
-      .get('/api/reviews?category=banana')
-      .expect(400)
-      .then(({body})=>{
-        const serverResponseMsg = body.msg;
-        expect(serverResponseMsg).toBe("Bad request.");
-      })
-    })
-    
-    
+        .get("/api/reviews?sort_by=does+not+exist")
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+
+    it("400 GET - returns msg if category is not in the database.", () => {
+      return request(app)
+        .get("/api/reviews?category=banana")
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
   });
 
   describe("/api/reviews/review_id", () => {
@@ -429,8 +424,8 @@ describe("api", () => {
           .expect(200)
           .then(({ body }) => {
             const comments = body.comments;
-  
-            expect(comments).toEqual([])
+
+            expect(comments).toEqual([]);
           });
       });
 
