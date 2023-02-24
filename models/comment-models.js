@@ -15,3 +15,22 @@ exports.insertComment = (newComment, reviewId) => {
     return postedComment.rows[0];
   });
 };
+exports.selectComments = (reviewId) => {
+  let queryStr = 'SELECT * FROM comments'
+  let queryParam = []
+
+  if(reviewId !== undefined){
+    queryStr+= ' WHERE review_id = $1 ORDER BY created_at DESC'
+    queryParam.push(reviewId)
+
+  }
+  
+  return db
+  .query(queryStr, queryParam)
+  .then((comments)=>{
+    if(comments.rowCount === 0){
+      return Promise.reject('Content not found.')
+    }
+    return comments.rows
+  })
+}

@@ -6,7 +6,10 @@ const {
   getReviewById,
   getReviews,
   postComment,
+  getCommentsByReviewid
+
 } = require("./controllers/controllers");
+
 const {
   handleServerErrors,
   handle404Errors,
@@ -20,6 +23,7 @@ app.get("/api/categories", getCategories);
 
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id", getReviewById);
+app.get("/api/reviews/:review_id/comments", getCommentsByReviewid);
 
 app.post("/api/reviews/:review_id/comments", postComment);
 

@@ -1,5 +1,5 @@
 exports.handle404Errors = (req, res, next) => {
-  res.status(404).send({ msg: "Path not found" });
+  res.status(404).send({ msg: "Path not found." });
 };
 
 exports.handle400Errors = (err, req, res, next) => {
@@ -11,15 +11,16 @@ exports.handle400Errors = (err, req, res, next) => {
 };
 
 exports.handleServerErrors = (err, req, res, next) => {
-  if (err === "review_id not found" || err.code === "23503") {
+  if (err === 'Content not found.' ||  err.code === "23503") {
     res.status(404).send({ msg: "Content not found." });
   }
   else {
     next(err);
   }
-};
+}
 
 exports.handle500statuses = (err, req, res, next) => {
   console.log(err, "<-error");
   res.status(500).send({ msg: "Internal Server Error" });
+
 };
