@@ -142,7 +142,7 @@ describe("api", () => {
         });
     });
   
-    it.only("200 GET - returns empty array if category that exists but does not have any reviews associated with it.",()=>{
+    it("200 GET - returns empty array if category that exists but does not have any reviews associated with it.",()=>{
       return request(app)
       .get("/api/reviews?category=children%27s+games")
       .expect(200)
