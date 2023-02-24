@@ -52,7 +52,6 @@ describe("api", () => {
           expect(reviews.length).toBe(13);
           reviews.forEach((review) => {
             expect(review).toMatchObject({
-
               owner: expect.any(String),
               title: expect.any(String),
               review_id: expect.any(Number),
@@ -62,9 +61,8 @@ describe("api", () => {
               votes: expect.any(Number),
               designer: expect.any(String),
               comment_count: expect.any(String),
-
+            });
           });
-        })
 
           const foundReview = reviews.find((review) => {
             if (review.review_id === 2) {
@@ -90,115 +88,218 @@ describe("api", () => {
     });
   });
 
-  describe("/api/reviews/review_id", () => {
-    it("200 GET - responds with single review object.", () => {
+  // category, which selects the reviews by the category
+  // value specified in the query. If the query is omitted
+  //  the endpoint should respond with all reviews.
+  //  sort_by, which sorts the articles by
+  //  any valid column (defaults to date)
+
+  //  order, which can be set to asc or
+  //  desc for ascending or descending (defaults to descending)
+
+  describe("/api/reviews?query", () => {
+    it("200 GET - responds with queried array of review objects", () => {
       return request(app)
-        .get("/api/reviews/2")
+        .get("/api/reviews?category=social_deduction&sort_by=title&order=asc")
         .expect(200)
         .then(({ body }) => {
-          const review = body.review;
+          const reviews = body.reviews;
+          expect(reviews.length).toBe(11);
+          reviews.forEach((review) => {
+            expect(review).toMatchObject({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: "social deduction",
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
 
-          expect(review).toMatchObject({
-            review_id: 2,
-            title: 'Jenga',
-            category: 'dexterity',
-            designer: 'Leslie Scott',
+          const foundReview = reviews.find((review) => {
+            if (review.review_id === 7) {
+              return review;
+            }
+          });
 
-            owner: 'philippaclaire9',
-            review_body: 'Fiddly fun for all the family',
-            review_img_url: 'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
-            created_at: '2021-01-18T10:01:41.251Z',
-            votes: 5
-
-        });
-
-        });
-    });
-
-    it("400 GET - invalid review id responds with bad request msg.", () => {
-      return request(app)
-        .get("/api/reviews/bad-request")
-        .expect(400)
-        .then(({ body }) => {
-          const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Bad request.");
+          expect(foundReview.comment_count).toBe("0");
         });
     });
-
-    it("404 GET - responds with msg when sent valid but non-existent path.", () => {
+    it.only("200 GET - endpoint should default with DESC if there is order query.", () => {
       return request(app)
-        .get("/api/reviews/99999999")
-        .expect(404)
+        .get("/api/reviews?category=social_deduction&sort_by=title")
+        .expect(200)
         .then(({ body }) => {
-          const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Content not found.");
+          const reviews = body.reviews;
+
+          const reviewTitles = reviews.map((review) => {
+            return review.title;
+          });
+          expect(reviewTitles).toBeSorted({ descending: true });
         });
     });
-
-    it("201 PATCH - responds with the updated review.", () => {
+  
+    it("200 GET - returns empty array if category that exists but does not have any reviews associated with it.",()=>{
       return request(app)
-        .patch("/api/reviews/2")
-        .send({ inc_votes: 100 })
-        .expect(201)
-        .then(({ body }) => {
-          const review = body.review;
+      .get("/api/reviews?category=children%27s_games")
+      .expect(200)
+      .then(({body})=>{
+        const reviews = body.reviews;
+        expect(reviews).toEqual([]);
+        
+      })
+    })
 
-          expect(review).toMatchObject({
-            review_id: 2,
-            title: 'Jenga',
-            category: 'dexterity',
-            designer: 'Leslie Scott',
+    it("400 GET - returns msg if  sort by column that doesn't exist.",()=>{
+      return request(app)
+      .get('/api/reviews?category=does_not_exist')
+      .expect(400)
+      .then(({body})=>{
 
-            owner: 'philippaclaire9',
-            review_body: 'Fiddly fun for all the family',
-            review_img_url: 'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
-            created_at: '2021-01-18T10:01:41.251Z',
-            votes: 105
-        });
+        const serverResponseMsg = body.msg;
+        expect(serverResponseMsg).toBe("Bad request.");
+      })
+    })
+
+    it("400 GET - returns msg if order !== 'asc' / 'desc'.",()=>{
+      return request(app)
+      .get('/api/reviews?order=upside_down')
+      .expect(400)
+      .then(({body})=>{
+        const serverResponseMsg = body.msg;
+        expect(serverResponseMsg).toBe("Bad request.");
+      })
+    })
+
+    it("400 GET - returns msg if category is not in the database.",()=>{
+      return request(app)
+      .get('/api/reviews?category=banana')
+      .expect(400)
+      .then(({body})=>{
+        const serverResponseMsg = body.msg;
+        expect(serverResponseMsg).toBe("Bad request.");
+      })
+    })
+    
+    
+  });
+
+  describe("/api/reviews/review_id", () => {
+    describe("GET", () => {
+      it("200 GET - responds with single review object.", () => {
+        return request(app)
+          .get("/api/reviews/2")
+          .expect(200)
+          .then(({ body }) => {
+            const review = body.review;
+
+            expect(review).toMatchObject({
+              review_id: 2,
+              title: "Jenga",
+              category: "dexterity",
+              designer: "Leslie Scott",
+
+              owner: "philippaclaire9",
+              review_body: "Fiddly fun for all the family",
+              review_img_url:
+                "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
+              created_at: "2021-01-18T10:01:41.251Z",
+              votes: 5,
+            });
+          });
+      });
+
+      it("400 GET - invalid review id responds with bad request msg.", () => {
+        return request(app)
+          .get("/api/reviews/bad-request")
+          .expect(400)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Bad request.");
+          });
+      });
+
+      it("404 GET - responds with msg when sent valid but non-existent path.", () => {
+        return request(app)
+          .get("/api/reviews/99999999")
+          .expect(404)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Content not found.");
+          });
+      });
+
+      it("201 PATCH - responds with the updated review.", () => {
+        return request(app)
+          .patch("/api/reviews/2")
+          .send({ inc_votes: 100 })
+          .expect(201)
+          .then(({ body }) => {
+            const review = body.review;
+
+            expect(review).toMatchObject({
+              review_id: 2,
+              title: "Jenga",
+              category: "dexterity",
+              designer: "Leslie Scott",
+
+              owner: "philippaclaire9",
+              review_body: "Fiddly fun for all the family",
+              review_img_url:
+                "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
+              created_at: "2021-01-18T10:01:41.251Z",
+              votes: 105,
+            });
+          });
       });
     });
 
-    it("201 PATCH - ignores other properties responds with the updated review.", () => {
-      return request(app)
-        .patch("/api/reviews/2")
-        .send({ inc_votes: -100, name: "Anouk" })
-        .expect(201)
-        .then(({ body }) => {
-          const review = body.review;
-          expect(review.votes).toBe(-95);
-        });
-    });
+    describe("PATCH", () => {
+      it("201 PATCH - ignores other properties responds with the updated review.", () => {
+        return request(app)
+          .patch("/api/reviews/2")
+          .send({ inc_votes: -100, name: "Anouk" })
+          .expect(201)
+          .then(({ body }) => {
+            const review = body.review;
+            expect(review.votes).toBe(-95);
+          });
+      });
 
-    it("400 PATCH - responds with msg bad request if inc_votes not included.", () => {
-      return request(app)
-        .patch("/api/reviews/bad-request")
-        .send({ inc_votes: "notanumber" })
-        .expect(400)
-        .then(({ body }) => {
-          const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Bad request.");
-        });
-    });
-    it("400 PATCH - responds with msg bad request if passed a non-number.", () => {
-      return request(app)
-        .patch("/api/reviews/bad-request")
-        .send({ not_votes: 2 })
-        .expect(400)
-        .then(({ body }) => {
-          const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Bad request.");
-        });
-    });
+      it("400 PATCH - responds with msg bad request if inc_votes not included.", () => {
+        return request(app)
+          .patch("/api/reviews/bad-request")
+          .send({ inc_votes: "notanumber" })
+          .expect(400)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Bad request.");
+          });
+      });
+      it("400 PATCH - responds with msg bad request if passed a non-number.", () => {
+        return request(app)
+          .patch("/api/reviews/bad-request")
+          .send({ not_votes: 2 })
+          .expect(400)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Bad request.");
+          });
+      });
 
-    it("404 PATCH - responds with msg when sent valid but non-existent path.", () => {
-      return request(app)
-        .patch("/api/reviews/99999999")
-        .send({ inc_votes: 5 })
-        .expect(404)
-        .then(({ body }) => {
-          const serverResponseMsg = body.msg;
-          expect(serverResponseMsg).toBe("Content not found.");
-        });
+      it("404 PATCH - responds with msg when sent valid but non-existent path.", () => {
+        return request(app)
+          .patch("/api/reviews/99999999")
+          .send({ inc_votes: 5 })
+          .expect(404)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Content not found.");
+          });
+      });
     });
   });
 
@@ -319,6 +420,17 @@ describe("api", () => {
               return comment.created_at;
             });
             expect(commentDates).toBeSorted({ descending: true });
+          });
+      });
+
+      it("200 GET - review with no comments should return an empty array.", () => {
+        return request(app)
+          .get("/api/reviews/8/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const comments = body.comments;
+  
+            expect(comments).toEqual([])
           });
       });
 
