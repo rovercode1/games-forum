@@ -10,8 +10,7 @@ exports.insertComment = (newComment, reviewId) => {
       ($1, $2, $3) 
     RETURNING *;`;
 
-    return db.query(queryStr, formattedComment)
-    .then((postedComment) => {
+  return db.query(queryStr, formattedComment).then((postedComment) => {
     return postedComment.rows[0];
   });
 };
@@ -32,8 +31,7 @@ exports.selectComments = (reviewId) => {
     queryParam.push(reviewId);
   }
 
-  return db.query(queryStr, queryParam)
-  .then((comments) => {
+  return db.query(queryStr, queryParam).then((comments) => {
     if (comments.rowCount === 0) {
       return Promise.reject("Content not found.");
     }
