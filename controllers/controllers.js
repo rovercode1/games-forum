@@ -1,7 +1,8 @@
 
 const { getCategories } = require("./category-controllers.js");
-const { getReviews, getReviewById } = require("./review-controllers.js");
+const { getReviews, getReviewById, patchReviewById } = require("./review-controllers.js");
 const { getCommentsByReviewid, postComment } = require("./comment-controllers.js");
+
 const {
   handle404Errors,
   handle400Errors,
@@ -13,6 +14,7 @@ const {
 module.exports = {
   getReviews,
   getReviewById,
+  patchReviewById,
   getCategories,
   handle404Errors,
   handle400Errors,
