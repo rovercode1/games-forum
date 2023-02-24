@@ -52,7 +52,6 @@ describe("api", () => {
           expect(reviews.length).toBe(13);
           reviews.forEach((review) => {
             expect(review).toMatchObject({
-
               owner: expect.any(String),
               title: expect.any(String),
               review_id: expect.any(Number),
@@ -62,9 +61,8 @@ describe("api", () => {
               votes: expect.any(Number),
               designer: expect.any(String),
               comment_count: expect.any(String),
-
+            });
           });
-        })
 
           const foundReview = reviews.find((review) => {
             if (review.review_id === 2) {
@@ -100,18 +98,17 @@ describe("api", () => {
 
           expect(review).toMatchObject({
             review_id: 2,
-            title: 'Jenga',
-            category: 'dexterity',
-            designer: 'Leslie Scott',
+            title: "Jenga",
+            category: "dexterity",
+            designer: "Leslie Scott",
 
-            owner: 'philippaclaire9',
-            review_body: 'Fiddly fun for all the family',
-            review_img_url: 'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
-            created_at: '2021-01-18T10:01:41.251Z',
-            votes: 5
-
-        });
-
+            owner: "philippaclaire9",
+            review_body: "Fiddly fun for all the family",
+            review_img_url:
+              "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 5,
+          });
         });
     });
 
@@ -145,17 +142,18 @@ describe("api", () => {
 
           expect(review).toMatchObject({
             review_id: 2,
-            title: 'Jenga',
-            category: 'dexterity',
-            designer: 'Leslie Scott',
+            title: "Jenga",
+            category: "dexterity",
+            designer: "Leslie Scott",
 
-            owner: 'philippaclaire9',
-            review_body: 'Fiddly fun for all the family',
-            review_img_url: 'https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700',
-            created_at: '2021-01-18T10:01:41.251Z',
-            votes: 105
+            owner: "philippaclaire9",
+            review_body: "Fiddly fun for all the family",
+            review_img_url:
+              "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 105,
+          });
         });
-      });
     });
 
     it("201 PATCH - ignores other properties responds with the updated review.", () => {
@@ -341,6 +339,25 @@ describe("api", () => {
             expect(serverResponseMsg).toBe("Bad request.");
           });
       });
+    });
+  });
+
+  describe("/api/users", () => {
+    it("200 GET - responds with array of user objects with correct properties.", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const users = body.users;
+          expect(users.length).toBe(4);
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
+        });
     });
   });
 });
