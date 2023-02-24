@@ -338,7 +338,7 @@ describe("api", () => {
           .expect(404)
           .then(({ body }) => {
             const serverResponseMsg = body.msg;
-            expect(serverResponseMsg).toBe("Comments not found.");
+            expect(serverResponseMsg).toBe("Content not found.");
           });
       });
   
