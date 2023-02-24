@@ -2,6 +2,7 @@
 const { getCategories } = require("./category-controllers.js");
 const { getReviews, getReviewById, patchReviewById } = require("./review-controllers.js");
 const { getCommentsByReviewid, postComment } = require("./comment-controllers.js");
+const { getUsers } = require("./user-controllers.js");
 
 const {
   handle404Errors,
@@ -12,10 +13,11 @@ const {
 
 
 module.exports = {
+  getUsers,
+  getCategories,
   getReviews,
   getReviewById,
   patchReviewById,
-  getCategories,
   handle404Errors,
   handle400Errors,
   handleServerErrors,
