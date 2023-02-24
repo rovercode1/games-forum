@@ -5,7 +5,9 @@ const {
   getCategories,
   getReviewById,
   getReviews,
+  postComment,
   getCommentsByReviewid
+
 } = require("./controllers/controllers");
 
 const {
@@ -15,11 +17,15 @@ const {
   handle500statuses,
 } = require("./controllers/controllers");
 
+app.use(express.json());
+
 app.get("/api/categories", getCategories);
 
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewid);
+
+app.post("/api/reviews/:review_id/comments", postComment);
 
 app.use(handle404Errors);
 app.use(handle400Errors);

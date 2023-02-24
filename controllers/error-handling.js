@@ -11,13 +11,10 @@ exports.handle400Errors = (err, req, res, next) => {
 };
 
 exports.handleServerErrors = (err, req, res, next) => {
-  if (err === "review_id not found") {
-    res.status(404).send({ msg: "Review not found." });
+  if (err === 'Content not found.' ||  err.code === "23503") {
+    res.status(404).send({ msg: "Content not found." });
   }
-  else if(err === 'Comments not found.'){
-    res.status(404).send({msg: 'Comments not found.'})
-  }
-   else {
+  else {
     next(err);
   }
 }
