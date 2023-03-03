@@ -88,19 +88,55 @@ describe("api", () => {
     });
   });
 
-  // category, which selects the reviews by the category
-  // value specified in the query. If the query is omitted
-  //  the endpoint should respond with all reviews.
-  //  sort_by, which sorts the articles by
-  //  any valid column (defaults to date)
+-  describe("/api/reviews?query", () => {
+    it("200 GET - responds with an array of review objects where category = query.", () => {
+      return request(app)
+        .get("/api/reviews?category=euro+game")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews.length).toBe(1);
 
-  //  order, which can be set to asc or
-  //  desc for ascending or descending (defaults to descending)
+          expect(reviews[0].category).toBe("euro game");
+        });
+    });
 
-  describe("/api/reviews?query", () => {
+    it("200 GET - responds with an array of review objects where sort_by = query.", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=owner")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews.length).toBe(13);
+          expect(reviews[0].owner).toBe("philippaclaire9");
+
+          const reviewOwners = reviews.map((review) => {
+            return review.owner;
+          });
+          expect(reviewOwners).toBeSorted({ descending: true });
+          
+        });
+    });
+
+    it("200 GET - responds with an array of review objects where order = query.", () => {
+      return request(app)
+        .get("/api/reviews?order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews.length).toBe(13);
+
+          expect(reviews[0].review_id).toBe(13);
+          const reviewDefault = reviews.map((review) => {
+            return review.created_at;
+          });
+          expect(reviewDefault).toBeSorted({ descending: false });    
+        });
+    });
+
     it("200 GET - responds with queried array of review objects", () => {
       return request(app)
-        .get("/api/reviews?category=social+deduction&sort_by=title&order=asc")
+        .get("/api/reviews?category=social+deduction&sort_by=votes&order=asc")
         .expect(200)
         .then(({ body }) => {
           const reviews = body.reviews;
@@ -118,14 +154,11 @@ describe("api", () => {
               comment_count: expect.any(String),
             });
           });
-
-          const foundReview = reviews.find((review) => {
-            if (review.review_id === 7) {
-              return review;
-            }
+          const reviewVotes = reviews.map((review) => {
+            return review.votes;
           });
-
-          expect(foundReview.comment_count).toBe("0");
+          expect(reviewVotes).toBeSorted({ descending: false });  
+          expect(reviews[10].votes).toBe(100);
         });
     });
     it("200 GET - endpoint should default with DESC if there is order query.", () => {
@@ -203,7 +236,7 @@ describe("api", () => {
                 "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
               created_at: "2021-01-18T10:01:41.251Z",
               votes: 5,
-            });
+            }); 
           });
       });
 
