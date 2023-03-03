@@ -9,8 +9,8 @@
     "test": "psql -f ./db/setup.sql && jest",
     "playground" : "jest && psql -f ./playground.sql",
     "prepare": "husky install",
-    "start":"node listen.js",
-    "seed-prod":"NODE_ENV=production npm seed"
+    "start": "node listen.js",
+    "seed-prod": "NODE_ENV=production npm run seed"
   },
   "repository": {
     "type": "git",
