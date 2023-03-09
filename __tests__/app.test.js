@@ -88,16 +88,26 @@ describe("api", () => {
     });
   });
 
--  describe("/api/reviews?query", () => {
+  describe("/api/reviews?query", () => {
     it("200 GET - responds with an array of review objects where category = query.", () => {
       return request(app)
         .get("/api/reviews?category=euro+game")
         .expect(200)
         .then(({ body }) => {
           const reviews = body.reviews;
-          expect(reviews.length).toBe(1);
-
-          expect(reviews[0].category).toBe("euro game");
+          expect(reviews[0]).toMatchObject({
+            title: "Agricola",
+            owner: "mallionaire",
+            review_id: 1,
+            category: "euro game",
+            review_img_url:
+              "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+            review_body: "Farmyard fun!",
+            created_at: "2021-01-18T10:00:20.514Z",
+            votes: 1,
+            designer: "Uwe Rosenberg",
+            comment_count: "0",
+          });
         });
     });
 
@@ -109,12 +119,10 @@ describe("api", () => {
           const reviews = body.reviews;
           expect(reviews.length).toBe(13);
           expect(reviews[0].owner).toBe("philippaclaire9");
-
           const reviewOwners = reviews.map((review) => {
             return review.owner;
           });
           expect(reviewOwners).toBeSorted({ descending: true });
-          
         });
     });
 
@@ -125,16 +133,15 @@ describe("api", () => {
         .then(({ body }) => {
           const reviews = body.reviews;
           expect(reviews.length).toBe(13);
-
           expect(reviews[0].review_id).toBe(13);
           const reviewDefault = reviews.map((review) => {
             return review.created_at;
           });
-          expect(reviewDefault).toBeSorted({ descending: false });    
+          expect(reviewDefault).toBeSorted({ descending: false });
         });
     });
 
-    it("200 GET - responds with queried array of review objects", () => {
+    it("200 GET - responds with queried array of review objects.", () => {
       return request(app)
         .get("/api/reviews?category=social+deduction&sort_by=votes&order=asc")
         .expect(200)
@@ -157,24 +164,22 @@ describe("api", () => {
           const reviewVotes = reviews.map((review) => {
             return review.votes;
           });
-          expect(reviewVotes).toBeSorted({ descending: false });  
+          expect(reviewVotes).toBeSorted({ descending: false });
           expect(reviews[10].votes).toBe(100);
         });
     });
-    it("200 GET - endpoint should default with DESC if there is order query.", () => {
+    it("200 GET - endpoint should default with DESC if there isn't order query.", () => {
       return request(app)
         .get("/api/reviews?category=social+deduction&sort_by=title")
         .expect(200)
         .then(({ body }) => {
           const reviews = body.reviews;
-
           const reviewTitles = reviews.map((review) => {
             return review.title;
           });
           expect(reviewTitles).toBeSorted({ descending: true });
         });
     });
-
     it("200 GET - returns empty array if category that exists but does not have any reviews associated with it.", () => {
       return request(app)
         .get("/api/reviews?category=children%27s+games")
@@ -184,7 +189,7 @@ describe("api", () => {
           expect(reviews).toEqual([]);
         });
     });
-    it("404 GET - returns msg if order !== 'asc' / 'desc'.", () => {
+    it("400 GET - returns msg if order !== 'asc' / 'desc'.", () => {
       return request(app)
         .get("/api/reviews?order=upside+down")
         .expect(400)
@@ -194,7 +199,7 @@ describe("api", () => {
         });
     });
 
-    it("400 GET - returns msg if  sort by column that doesn't exist.", () => {
+    it("400 GET - returns msg if sort by column that doesn't exist.", () => {
       return request(app)
         .get("/api/reviews?sort_by=does+not+exist")
         .expect(400)
@@ -212,77 +217,6 @@ describe("api", () => {
           const serverResponseMsg = body.msg;
           expect(serverResponseMsg).toBe("Bad request.");
         });
-    });
-  });
-
-  describe("/api/reviews/review_id", () => {
-    describe("GET", () => {
-      it("200 GET - responds with single review object.", () => {
-        return request(app)
-          .get("/api/reviews/2")
-          .expect(200)
-          .then(({ body }) => {
-            const review = body.review;
-
-            expect(review).toMatchObject({
-              review_id: 2,
-              title: "Jenga",
-              category: "dexterity",
-              designer: "Leslie Scott",
-
-              owner: "philippaclaire9",
-              review_body: "Fiddly fun for all the family",
-              review_img_url:
-                "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
-              created_at: "2021-01-18T10:01:41.251Z",
-              votes: 5,
-            }); 
-          });
-      });
-
-      it("400 GET - invalid review id responds with bad request msg.", () => {
-        return request(app)
-          .get("/api/reviews/bad-request")
-          .expect(400)
-          .then(({ body }) => {
-            const serverResponseMsg = body.msg;
-            expect(serverResponseMsg).toBe("Bad request.");
-          });
-      });
-
-      it("404 GET - responds with msg when sent valid but non-existent path.", () => {
-        return request(app)
-          .get("/api/reviews/99999999")
-          .expect(404)
-          .then(({ body }) => {
-            const serverResponseMsg = body.msg;
-            expect(serverResponseMsg).toBe("Content not found.");
-          });
-      });
-
-      it("201 PATCH - responds with the updated review.", () => {
-        return request(app)
-          .patch("/api/reviews/2")
-          .send({ inc_votes: 100 })
-          .expect(201)
-          .then(({ body }) => {
-            const review = body.review;
-
-            expect(review).toMatchObject({
-              review_id: 2,
-              title: "Jenga",
-              category: "dexterity",
-              designer: "Leslie Scott",
-
-              owner: "philippaclaire9",
-              review_body: "Fiddly fun for all the family",
-              review_img_url:
-                "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
-              created_at: "2021-01-18T10:01:41.251Z",
-              votes: 105,
-            });
-          });
-      });
     });
 
     describe("PATCH", () => {
@@ -328,6 +262,118 @@ describe("api", () => {
             expect(serverResponseMsg).toBe("Content not found.");
           });
       });
+    });
+  });
+
+  describe("/api/reviews/review_id", () => {
+    it("200 GET - responds with single review object.", () => {
+      return request(app)
+        .get("/api/reviews/2")
+        .expect(200)
+        .then(({ body }) => {
+          const review = body.review;
+
+          expect(review).toMatchObject({
+            review_id: 2,
+            title: "Jenga",
+            category: "dexterity",
+            designer: "Leslie Scott",
+
+            owner: "philippaclaire9",
+            review_body: "Fiddly fun for all the family",
+            review_img_url:
+              "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 5,
+          });
+        });
+    });
+
+    it("400 GET - invalid review id responds with bad request msg.", () => {
+      return request(app)
+        .get("/api/reviews/bad-request")
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+
+    it("404 GET - responds with msg when sent valid but non-existent path.", () => {
+      return request(app)
+        .get("/api/reviews/99999999")
+        .expect(404)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Content not found.");
+        });
+    });
+
+    it("201 PATCH - responds with the updated review.", () => {
+      return request(app)
+        .patch("/api/reviews/2")
+        .send({ inc_votes: 100 })
+        .expect(201)
+        .then(({ body }) => {
+          const review = body.review;
+
+          expect(review).toMatchObject({
+            review_id: 2,
+            title: "Jenga",
+            category: "dexterity",
+            designer: "Leslie Scott",
+
+            owner: "philippaclaire9",
+            review_body: "Fiddly fun for all the family",
+            review_img_url:
+              "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
+            created_at: "2021-01-18T10:01:41.251Z",
+            votes: 105,
+          });
+        });
+    });
+
+    it("201 PATCH - ignores other properties responds with the updated review.", () => {
+      return request(app)
+        .patch("/api/reviews/2")
+        .send({ inc_votes: -100, name: "Anouk" })
+        .expect(201)
+        .then(({ body }) => {
+          const review = body.review;
+          expect(review.votes).toBe(-95);
+        });
+    });
+
+    it("400 PATCH - responds with msg bad request if inc_votes not included.", () => {
+      return request(app)
+        .patch("/api/reviews/bad-request")
+        .send({ inc_votes: "notanumber" })
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+    it("400 PATCH - responds with msg bad request if passed a non-number.", () => {
+      return request(app)
+        .patch("/api/reviews/bad-request")
+        .send({ not_votes: 2 })
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+
+    it("404 PATCH - responds with msg when sent valid but non-existent path.", () => {
+      return request(app)
+        .patch("/api/reviews/99999999")
+        .send({ inc_votes: 5 })
+        .expect(404)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Content not found.");
+        });
     });
   });
 
@@ -417,12 +463,13 @@ describe("api", () => {
     });
 
     describe("GET", () => {
-      it("200 GET - responds with an array of comments for the given review id.", () => {
+      it("200 GET - responds with an array of comments for the given review_id.", () => {
         return request(app)
           .get("/api/reviews/3/comments")
           .expect(200)
           .then(({ body }) => {
             const comments = body.comments;
+
             expect(body.comments.length).toBe(3);
             comments.forEach((comment) => {
               expect(comment).toMatchObject({
@@ -435,7 +482,6 @@ describe("api", () => {
               });
             });
           });
-        ///
       });
 
       it("200 GET - comments should be sorted by date in descending order.", () => {
@@ -444,6 +490,7 @@ describe("api", () => {
           .expect(200)
           .then(({ body }) => {
             const comments = body.comments;
+
             const commentDates = comments.map((comment) => {
               return comment.created_at;
             });
@@ -481,6 +528,25 @@ describe("api", () => {
             expect(serverResponseMsg).toBe("Bad request.");
           });
       });
+    });
+  });
+
+  describe("/api/users", () => {
+    it("200 GET - responds with array of user objects with correct properties.", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const users = body.users;
+          expect(users.length).toBe(4);
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
+        });
     });
   });
 });

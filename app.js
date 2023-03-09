@@ -3,8 +3,9 @@ const app = express();
 
 const {
   getCategories,
-  getReviewById,
   getReviews,
+  getUsers,
+  getReviewById,
   getCommentsByReviewid,
 
   postComment,
@@ -19,8 +20,9 @@ const {
 app.use(express.json());
 
 app.get("/api/categories", getCategories);
-
 app.get("/api/reviews", getReviews);
+app.get("/api/users", getUsers);
+
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewid);
 app.patch("/api/reviews/:review_id", patchReviewById);
