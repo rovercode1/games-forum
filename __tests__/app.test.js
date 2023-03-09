@@ -88,6 +88,183 @@ describe("api", () => {
     });
   });
 
+  describe("/api/reviews?query", () => {
+    it("200 GET - responds with an array of review objects where category = query.", () => {
+      return request(app)
+        .get("/api/reviews?category=euro+game")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews[0]).toMatchObject({
+            title: "Agricola",
+            owner: "mallionaire",
+            review_id: 1,
+            category: "euro game",
+            review_img_url:
+              "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+            review_body: "Farmyard fun!",
+            created_at: "2021-01-18T10:00:20.514Z",
+            votes: 1,
+            designer: "Uwe Rosenberg",
+            comment_count: "0",
+          });
+        });
+    });
+
+    it("200 GET - responds with an array of review objects where sort_by = query.", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=owner")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews.length).toBe(13);
+          expect(reviews[0].owner).toBe("philippaclaire9");
+          const reviewOwners = reviews.map((review) => {
+            return review.owner;
+          });
+          expect(reviewOwners).toBeSorted({ descending: true });
+        });
+    });
+
+    it("200 GET - responds with an array of review objects where order = query.", () => {
+      return request(app)
+        .get("/api/reviews?order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews.length).toBe(13);
+          expect(reviews[0].review_id).toBe(13);
+          const reviewDefault = reviews.map((review) => {
+            return review.created_at;
+          });
+          expect(reviewDefault).toBeSorted({ descending: false });
+        });
+    });
+
+    it("200 GET - responds with queried array of review objects.", () => {
+      return request(app)
+        .get("/api/reviews?category=social+deduction&sort_by=votes&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews.length).toBe(11);
+          reviews.forEach((review) => {
+            expect(review).toMatchObject({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: "social deduction",
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+          const reviewVotes = reviews.map((review) => {
+            return review.votes;
+          });
+          expect(reviewVotes).toBeSorted({ descending: false });
+          expect(reviews[10].votes).toBe(100);
+        });
+    });
+    it("200 GET - endpoint should default with DESC if there isn't order query.", () => {
+      return request(app)
+        .get("/api/reviews?category=social+deduction&sort_by=title")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          const reviewTitles = reviews.map((review) => {
+            return review.title;
+          });
+          expect(reviewTitles).toBeSorted({ descending: true });
+        });
+    });
+    it("200 GET - returns empty array if category that exists but does not have any reviews associated with it.", () => {
+      return request(app)
+        .get("/api/reviews?category=children%27s+games")
+        .expect(200)
+        .then(({ body }) => {
+          const reviews = body.reviews;
+          expect(reviews).toEqual([]);
+        });
+    });
+    it("400 GET - returns msg if order !== 'asc' / 'desc'.", () => {
+      return request(app)
+        .get("/api/reviews?order=upside+down")
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+
+    it("400 GET - returns msg if sort by column that doesn't exist.", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=does+not+exist")
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+
+    it("400 GET - returns msg if category is not in the database.", () => {
+      return request(app)
+        .get("/api/reviews?category=banana")
+        .expect(400)
+        .then(({ body }) => {
+          const serverResponseMsg = body.msg;
+          expect(serverResponseMsg).toBe("Bad request.");
+        });
+    });
+
+    describe("PATCH", () => {
+      it("201 PATCH - ignores other properties responds with the updated review.", () => {
+        return request(app)
+          .patch("/api/reviews/2")
+          .send({ inc_votes: -100, name: "Anouk" })
+          .expect(201)
+          .then(({ body }) => {
+            const review = body.review;
+            expect(review.votes).toBe(-95);
+          });
+      });
+
+      it("400 PATCH - responds with msg bad request if inc_votes not included.", () => {
+        return request(app)
+          .patch("/api/reviews/bad-request")
+          .send({ inc_votes: "notanumber" })
+          .expect(400)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Bad request.");
+          });
+      });
+      it("400 PATCH - responds with msg bad request if passed a non-number.", () => {
+        return request(app)
+          .patch("/api/reviews/bad-request")
+          .send({ not_votes: 2 })
+          .expect(400)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Bad request.");
+          });
+      });
+
+      it("404 PATCH - responds with msg when sent valid but non-existent path.", () => {
+        return request(app)
+          .patch("/api/reviews/99999999")
+          .send({ inc_votes: 5 })
+          .expect(404)
+          .then(({ body }) => {
+            const serverResponseMsg = body.msg;
+            expect(serverResponseMsg).toBe("Content not found.");
+          });
+      });
+    });
+  });
+
   describe("/api/reviews/review_id", () => {
     it("200 GET - responds with single review object.", () => {
       return request(app)
@@ -292,7 +469,7 @@ describe("api", () => {
           .expect(200)
           .then(({ body }) => {
             const comments = body.comments;
-  
+
             expect(body.comments.length).toBe(3);
             comments.forEach((comment) => {
               expect(comment).toMatchObject({
@@ -306,32 +483,32 @@ describe("api", () => {
             });
           });
       });
-  
+
       it("200 GET - comments should be sorted by date in descending order.", () => {
         return request(app)
           .get("/api/reviews/3/comments")
           .expect(200)
           .then(({ body }) => {
             const comments = body.comments;
-  
+
             const commentDates = comments.map((comment) => {
               return comment.created_at;
             });
             expect(commentDates).toBeSorted({ descending: true });
           });
       });
-  
+
       it("200 GET - review with no comments should return an empty array.", () => {
         return request(app)
           .get("/api/reviews/8/comments")
           .expect(200)
           .then(({ body }) => {
             const comments = body.comments;
-  
-            expect(comments).toEqual([])
+
+            expect(comments).toEqual([]);
           });
       });
-  
+
       it("404 GET - responds with msg when sent valid but non-existent path.", () => {
         return request(app)
           .get("/api/reviews/74872/comments")
@@ -341,7 +518,7 @@ describe("api", () => {
             expect(serverResponseMsg).toBe("Content not found.");
           });
       });
-  
+
       it("400 GET - responds with msg bad request.", () => {
         return request(app)
           .get("/api/reviews/bad-request/comments")

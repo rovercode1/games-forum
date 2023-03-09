@@ -2,7 +2,8 @@ const {selectReviews, selectReviewById, updateReviewById} = require('../models/r
 
 
 exports.getReviews = (request, response, next)=>{
-  selectReviews().then((reviews)=>{
+
+  selectReviews(request.query).then((reviews)=>{
     response.status(200).send({reviews: reviews})
   }).catch((err)=>{
     next(err)
