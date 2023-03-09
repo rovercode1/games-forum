@@ -95,7 +95,6 @@ describe("api", () => {
         .expect(200)
         .then(({ body }) => {
           const review = body.review;
-
           expect(review).toMatchObject({
             review_id: 2,
             title: "Jenga",
@@ -108,6 +107,7 @@ describe("api", () => {
               "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
             created_at: "2021-01-18T10:01:41.251Z",
             votes: 5,
+            comment_count: '3',
           });
         });
     });
