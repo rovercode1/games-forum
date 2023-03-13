@@ -9,7 +9,7 @@
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
     "test": "psql -f ./db/setup.sql && jest",
-    "playground" : "jest && psql -f ./playground.sql",
+    "playground": "jest && psql -f ./playground.sql",
     "prepare": "husky install",
     "start": "node listen.js",
     "seed-prod": "NODE_ENV=production npm run seed"
@@ -26,11 +26,12 @@
   },
   "homepage": "https://github.com/northcoders/be-nc-games#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.18.2",
     "pg": "^8.7.3",
-    "supertest": "^6.3.3",
-    "pg-format": "^1.0.4"
+    "pg-format": "^1.0.4",
+    "supertest": "^6.3.3"
   },
   "devDependencies": {
     "husky": "^8.0.2",
@@ -44,6 +45,5 @@
       "jest-extended/all",
       "jest-sorted"
     ]
-    
   }
 }

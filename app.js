@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const app = express();
 
 const {
@@ -17,6 +18,7 @@ const {
   handle500statuses,
 } = require("./controllers/controllers");
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/api/categories", getCategories);
